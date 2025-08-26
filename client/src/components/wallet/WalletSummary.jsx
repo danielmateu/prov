@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, TrendingUp, Calendar, AlertCircle, HandCoins, User, MapPin, Phone, Mail, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
@@ -81,7 +80,10 @@ export function WalletSummary({
                                     {/* Balance Total */}
                                     {t("WalletSummaryBalanceTitle")}
                                 </h3>
-                                <HandCoins className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                <div className="flex items-center gap-2">
+                                    <DataRefreshIndicator showRefreshButton={false} />
+                                    <HandCoins className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                </div>
                             </div>
                             <div className="text-3xl font-bold text-blue-900 dark:text-blue-50 mb-2">
                                 {formatCurrency(displayBalance)}
