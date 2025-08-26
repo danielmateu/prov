@@ -63,5 +63,11 @@ router.post('/accountingClaimRequest', noticeController.accountingClaimRequest);
 // submitConsultationRequest
 router.post('/submitConsultationRequest', noticeController.submitConsultationRequest);
 
+// Rutas específicas para callcenter
+router.get('/getAllCustomers', noticeController.getAllCustomers);
+router.post('/submitCallcenterClaim', noticeController.submitCallcenterClaim);
+router.post('/submitCallcenterAccounting', noticeController.submitCallcenterAccounting);
+router.post('/submitCallcenterConsultation', noticeController.submitCallcenterConsultation);
+
 export default router;
 

@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 
 const NoticesController = {};
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: false,
@@ -2245,6 +2245,104 @@ NoticesController.accountingClaimRequest = async (req, res) => {
             success: false,
             message: "Error interno del servidor al procesar la reclamación contable",
             error: error.message
+        });
+    }
+};
+
+// Endpoint para obtener todos los clientes (solo para callcenter)
+NoticesController.getAllCustomers = async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                CustomerID,
+                Name,
+                Surname,
+                SecondSurname,
+                Phone,
+                Cell,
+                Email,
+                Address,
+                AddressNext,
+                City,
+                ZipCode,
+                State,
+                Country,
+                DNI,
+                CreateDate,
+                ModifiedOn
+            FROM Customers
+            ORDER BY Name, Surname`;
+
+        const request = new sql.Request();
+        const result = await request.query(query);
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('Error al obtener todos los clientes:', err);
+        res.status(500).json({
+            error: 'Error al obtener los clientes',
+            details: err.message
+        });
+    }
+};
+
+// Endpoints específicos para callcenter
+NoticesController.submitCallcenterClaim = async (req, res) => {
+    try {
+        const claimData = req.body;
+        
+        // Aquí puedes procesar la reclamación del callcenter
+        // Por ejemplo, guardarla en una tabla específica o enviar notificaciones
+        
+        console.log('Reclamación de callcenter recibida:', claimData);
+        
+        res.json({
+            success: true,
+            message: 'Reclamación procesada correctamente'
+        });
+    } catch (err) {
+        console.error('Error al procesar reclamación de callcenter:', err);
+        res.status(500).json({
+            error: 'Error al procesar la reclamación',
+            details: err.message
+        });
+    }
+};
+
+NoticesController.submitCallcenterAccounting = async (req, res) => {
+    try {
+        const accountingData = req.body;
+        
+        console.log('Solicitud contable de callcenter recibida:', accountingData);
+        
+        res.json({
+            success: true,
+            message: 'Solicitud contable procesada correctamente'
+        });
+    } catch (err) {
+        console.error('Error al procesar solicitud contable de callcenter:', err);
+        res.status(500).json({
+            error: 'Error al procesar la solicitud contable',
+            details: err.message
+        });
+    }
+};
+
+NoticesController.submitCallcenterConsultation = async (req, res) => {
+    try {
+        const consultationData = req.body;
+        
+        console.log('Consulta de callcenter recibida:', consultationData);
+        
+        res.json({
+            success: true,
+            message: 'Consulta procesada correctamente'
+        });
+    } catch (err) {
+        console.error('Error al procesar consulta de callcenter:', err);
+        res.status(500).json({
+            error: 'Error al procesar la consulta',
+            details: err.message
         });
     }
 };
