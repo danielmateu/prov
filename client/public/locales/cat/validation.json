@@ -1,0 +1,22 @@
+{
+    "ValidationErrors": {
+        "NameRequired": "El nom és obligatori",
+        "SurnameRequired": "El cognom és obligatori",
+        "PhoneLength": "El telèfon ha de tenir almenys 9 dígits",
+        "PhoneFormat": "El telèfon només ha de contenir números",
+        "AddressRequired": "L'adreça és obligatòria",
+        "FloorDoorRequired": "El pis i porta són obligatoris",
+        "ZipCodeLength": "El codi postal ha de tenir 5 dígits",
+        "ZipCodeFormat": "El codi postal només ha de contenir números",
+        "EmailInvalid": "El correu electrònic no és vàlid",
+        "DeviceRequired": "L'aparell és obligatori",
+        "CommentLength": "El comentari no pot excedir els 500 caràcters",
+        "SATPhoneLength": "El telèfon SAT ha de tenir almenys 9 dígits",
+        "SATPhoneFormat": "El telèfon SAT només ha de contenir números",
+        "InvoiceNumberRequired": "El número de factura és obligatori",
+        "PurchaseDateRequired": "La data de compra és obligatòria",
+        "InvoiceRequired": "La factura és obligatòria",
+        "FileSizeLimit": "L'arxiu no pot superar els 5MB",
+        "FileTypeAccepted": "Només s'accepten arxius JPG, PNG o PDF"
+    }
+}

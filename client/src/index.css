@@ -1,0 +1,403 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 50 20% 95%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.75rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* reports chart */
+    --chart-6: 221.2 83.2% 53.3%;
+    --chart-7: 212 95% 68%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .blindcolor {
+    --background: 0 0% 95%;
+    /* Gris claro */
+    --foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --card: 0 0% 100%;
+    /* Blanco */
+    --card-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --popover: 0 0% 100%;
+    /* Blanco */
+    --popover-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --primary: 240 100% 50%;
+    /* Azul */
+    --primary-foreground: 0 0% 100%;
+    /* Blanco */
+    --secondary: 120 100% 25%;
+    /* Verde oscuro */
+    --secondary-foreground: 0 0% 100%;
+    /* Blanco */
+    --muted: 0 0% 80%;
+    /* Gris claro */
+    --muted-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    /* --accent: 60 100% 50%; */
+    /* Amarillo */
+    --accent-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --destructive: 0 100% 50%;
+    /* Rojo */
+    --destructive-foreground: 0 0% 100%;
+    /* Blanco */
+    --border: 0 0% 80%;
+    /* Gris claro */
+    --input: 0 0% 80%;
+    /* Gris claro */
+    --ring: 0 0% 20%;
+    /* Gris oscuro */
+    --radius: 0.75rem;
+    --chart-1: 0 100% 50%;
+    /* Rojo */
+    --chart-2: 120 100% 25%;
+    /* Verde oscuro */
+    --chart-3: 240 100% 50%;
+    /* Azul */
+    --chart-4: 60 100% 50%;
+    /* Amarillo */
+    --chart-5: 300 100% 50%;
+    /* Magenta */
+    --sidebar-background: 0 0% 95%;
+    /* Gris claro */
+    --sidebar-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --sidebar-primary: 240 100% 50%;
+    /* Azul */
+    --sidebar-primary-foreground: 0 0% 100%;
+    /* Blanco */
+    --sidebar-accent: 60 100% 50%;
+    /* Amarillo */
+    --sidebar-accent-foreground: 0 0% 20%;
+    /* Gris oscuro */
+    --sidebar-border: 0 0% 80%;
+    /* Gris claro */
+    --sidebar-ring: 0 0% 20%;
+    /* Gris oscuro */
+  }
+
+  .card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
+
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* background-image: url('/rapitecnic-1-1-scaled-black.jpg');
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed; */
+  }
+
+  /* estilos de los porcentajes de cada modulo */
+  .porcentajeModulos {
+    @apply absolute top-0 left-0 text-white bg-red-600 text-sm p-1 rounded-ee-sm group-hover:shadow-xl font-semibold blindcolor:bg-red-700;
+  }
+
+  .blindColorButtons {
+    @apply blindcolor:bg-white blindcolor:text-lg blindcolor:text-black blindcolor:border border-black blindcolor:font-semibold
+  }
+}
+
+html,
+body {
+  overflow-y: scroll;
+  /* Asegura que el contenido sea desplazable */
+  scrollbar-width: none;
+  /* Oculta la barra de desplazamiento en Firefox */
+  -ms-overflow-style: none;
+  /* Asegura que el contenido sea desplazable */
+}
+
+/* Ocultar la barra de desplazamiento en navegadores basados en WebKit */
+html::-webkit-scrollbar {
+  width: 0;
+  /* Ancho de la barra de desplazamiento */
+  height: 0;
+  /* Altura de la barra de desplazamiento */
+  display: none;
+}
+
+/* Ocultar la barra de desplazamiento en Firefox */
+html {
+  scrollbar-width: none;
+  /* Oculta la barra de desplazamiento en Firefox */
+}
+
+/* Ocultar la barra de desplazamiento en IE y Edge */
+html {
+  -ms-overflow-style: none;
+  /* Oculta la barra de desplazamiento en IE y Edge */
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: hsl(var(--background));
+  padding: 1rem;
+  z-index: 50;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.fixed-buttons {
+  position: fixed;
+  top: 14rem;
+  right: 4rem;
+  z-index: 50;
+  display: flex;
+  gap: 0.5rem;
+  background-color: hsl(var(--background));
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-invoice-buttons {
+  position: fixed;
+  /* bottom: 43em; */
+  top: 12em;
+  right: 2rem;
+  z-index: 50;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  background-color: hsla(var(--background) / 0.6);
+  /* Añadimos opacidad aquí */
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  /* Opcional: añade un efecto de desenfoque */
+}
+
+@media (width < 1024px) {
+  .fixed-invoice-buttons {
+    /* bottom: 48em; */
+    top: 7em
+  }
+}
+
+.fixed-timmer {
+  position: fixed;
+  top: 14rem;
+  right: 4rem;
+  z-index: 50;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-timmer-view {
+  position: fixed;
+  top: 18rem;
+  right: 4rem;
+  z-index: 50;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Add padding to content to prevent overlap */
+.content-padding {
+  padding-top: 1rem;
+}
+
+
+/* Estilo para ocultar la barra de desplazamiento horizontal pero permitir el scroll */
+::-webkit-scrollbar {
+  width: 0px;
+  /* Elimina la barra de desplazamiento */
+  height: 0px;
+  /* Elimina la barra de desplazamiento horizontal */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  /* Asegura que el "thumb" no se vea */
+}
+
+/* View transitions styles */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* View transitions API animations */
+::view-transition-old(root) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in;
+}
+
+/* Custom animations for specific elements */
+::view-transition-old(brand-details) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+}
+
+::view-transition-new(brand-details) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in, 400ms cubic-bezier(0.4, 0, 0.2, 1) both slide-in;
+}
+
+/* Fallback animations for browsers that don't support View Transitions API */
+.transition-fade-in {
+  animation: fade-in 300ms ease forwards;
+}
+
+.transition-scale-in {
+  animation: scale-in 300ms ease forwards;
+}
+
+/* Content transitions */
+.content-transition {
+  opacity: 0;
+  animation: slide-up 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.content-transition[data-index="0"] {
+  animation-delay: 0ms;
+}
+
+.content-transition[data-index="1"] {
+  animation-delay: 100ms;
+}
+
+.content-transition[data-index="2"] {
+  animation-delay: 200ms;
+}
+
+.content-transition[data-index="3"] {
+  animation-delay: 300ms;
+}

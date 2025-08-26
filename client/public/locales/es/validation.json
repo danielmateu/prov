@@ -1,0 +1,22 @@
+{
+    "ValidationErrors": {
+        "NameRequired": "El nombre es requerido",
+        "SurnameRequired": "El apellido es requerido",
+        "PhoneLength": "El teléfono debe tener al menos 9 dígitos",
+        "PhoneFormat": "El teléfono solo debe contener números",
+        "AddressRequired": "La dirección es requerida",
+        "FloorDoorRequired": "El piso y puerta son requeridos",
+        "ZipCodeLength": "El código postal debe tener 5 dígitos",
+        "ZipCodeFormat": "El código postal solo debe contener números",
+        "EmailInvalid": "El email no es válido",
+        "DeviceRequired": "El aparato es requerido",
+        "CommentLength": "El comentario no puede exceder los 500 caracteres",
+        "SATPhoneLength": "El teléfono SAT debe tener al menos 9 dígitos",
+        "SATPhoneFormat": "El teléfono SAT solo debe contener números",
+        "InvoiceNumberRequired": "El número de factura es requerido",
+        "PurchaseDateRequired": "La fecha de compra es requerida",
+        "InvoiceRequired": "La factura es requerida",
+        "FileSizeLimit": "El archivo no puede superar los 5MB",
+        "FileTypeAccepted": "Solo se aceptan archivos JPG, PNG o PDF"
+    }
+}
