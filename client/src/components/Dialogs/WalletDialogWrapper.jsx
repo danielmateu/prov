@@ -39,7 +39,7 @@ export function WalletDialogWrapper() {
     useEffect(() => {
         if (userInfo?.Ex_InvoicingAddressID) {
             fetchPendingPayments();
-            startPolling();
+            startSmartPolling();
 
             // Fetch notices for this user
             // console.log('Fetching notices for Ex_InvoicingAddressID:', userInfo.Ex_InvoicingAddressID);
@@ -48,7 +48,7 @@ export function WalletDialogWrapper() {
 
         // Cleanup polling on unmount
         return () => stopPolling();
-    }, [userInfo?.Ex_InvoicingAddressID, fetchPendingPayments, startPolling, stopPolling, fetchNotices]);
+    }, [userInfo?.Ex_InvoicingAddressID, fetchPendingPayments, stopPolling, fetchNotices]);
 
     // Force refresh when dialog opens
     useEffect(() => {

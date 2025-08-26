@@ -1,6 +1,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgeCent, ChevronRight, Download, ListFilter, ReceiptText, Wallet } from "lucide-react";
+import { BadgeCent, ChevronRight, Download, ListFilter, ReceiptText, Wallet, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WalletSummary } from "./WalletSummary";
 import { WalletTransactionList } from "./WalletTransactionList";
@@ -10,9 +10,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
+import { usePendingPaymentsStore } from "@/zustand/pendingPaymentsStore";
 
 
 export function WalletDialog({ transactions, isLoading, onOpenChange, notices }) {
+    const { refreshData, getCacheStatus, isOnline } = usePendingPaymentsStore();
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Filtrar los avisos que tienen paid = false
     const unpaidNotices = useMemo(() => {
@@ -41,6 +44,17 @@ export function WalletDialog({ transactions, isLoading, onOpenChange, notices })
     // console.log('Transactions:', transactions);
     const [filter, setFilter] = useState("all");
     const [view, setView] = useState("summary");
+
+    const handleManualRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await refreshData();
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const cacheStatus = getCacheStatus();
 
     // Calculate summary data
     const summaryData = useMemo(() => {
@@ -117,6 +131,20 @@ export function WalletDialog({ transactions, isLoading, onOpenChange, notices })
                     </TabsList>
 
                     <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                            {!isOnline && <WifiOff className="h-3 w-3 text-red-500" />}
+                            {isOnline && <Wifi className="h-3 w-3 text-green-500" />}
+                            <Button
+                                onClick={handleManualRefresh}
+                                variant="ghost"
+                                size="sm"
+                                disabled={isRefreshing}
+                                className="h-8 w-8 p-0"
+                                title={`Actualizar datos (Cache: ${cacheStatus})`}
+                            >
+                                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            </Button>
+                        </div>
 
                         <Button
                             onClick={() => {
