@@ -2,6 +2,7 @@ import { connectToSql } from './config/db.js';
 import app from './app.js';
 import setupWebSocket from './websocket/websocket.js';  // Importa la configuración del WebSocket
 import initScheduler from './common/cron.js';  // Importa cron
+import { setSocketIO } from './Controllers/noticesController.js';
 
 const port = process.env.PORT || 5090;
 const initialDatabase = process.env.ENV_dbName
@@ -14,6 +15,10 @@ connectToSql(initialDatabase)
 
         // Configurar WebSocket sobre el mismo servidor HTTP
         const io = setupWebSocket(server); // Asegúrate de pasar el servidor a WebSocket
+        
+        // Hacer io disponible globalmente para notificaciones
+        global.io = io;
+        setSocketIO(io);
 
         // Iniciar los cron jobs y pasar el objeto io
         initScheduler(io);

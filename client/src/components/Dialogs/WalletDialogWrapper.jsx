@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { useNoticesStore } from "@/zustand/noticesStore";
 import { t } from "i18next";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export function WalletDialogWrapper() {
     const [open, setOpen] = useState(false);
@@ -15,11 +16,13 @@ export function WalletDialogWrapper() {
     const {
         pendingPayments,
         fetchPendingPayments,
-        startPolling,
+        startSmartPolling,
         stopPolling,
         isLoading
     } = usePendingPaymentsStore();
 
+    // Conectar WebSocket para actualizaciones en tiempo real
+    useWebSocket(userInfo);
     const {
         notices,
         fetchNotices,

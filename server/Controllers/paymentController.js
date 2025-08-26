@@ -464,6 +464,17 @@ PaymentController.approvePendingPayment = async (req, res) => {
 
         console.log('Wallet actualizado a 0 para Ex_InvoicingAddressID:', invoicingAddressId);
 
+        // Notificar cambio via WebSocket
+        if (global.io) {
+            global.io.emit('paymentUpdate', {
+                type: 'payment_approved',
+                invoicingAddressId,
+                month,
+                quincena,
+                serviceTypeId,
+                amount: totalAmount
+            });
+        }
 
         // Send confirmation email with the provided totalAmount
         await sendPaymentConfirmationEmail(userInfo, {
