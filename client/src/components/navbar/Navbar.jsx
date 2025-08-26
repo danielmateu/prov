@@ -21,12 +21,14 @@ import { useTranslation } from "react-i18next";
 import { useTour } from "@reactour/tour";
 import { WalletDialogWrapper } from "../Dialogs/WalletDialogWrapper";
 import { useUserInfoStore } from "@/zustand/userInfoStore";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 export const Navbar = ({ activeTab, setActiveTab }) => {
     const { t } = useTranslation();
     // Use the safe user info getter to avoid null errors
     const { getSafeUserInfo, clearUserInfo } = useUserInfoStore();
     const userInfo = getSafeUserInfo();
+    const { checkPermission, isCallcenter, isSuper } = useUserPermissions();
 
     const menuItems = [
         {
@@ -38,8 +40,8 @@ export const Navbar = ({ activeTab, setActiveTab }) => {
                 // { to: "/asistencia/reclamaciones", text: 'Reclamaciones', icon: Frown },
                 // { to: "/asistencia/contabilidad", text: 'Contabilidad', icon: BadgeEuroIcon },
                 // { to: "/asistencia/consultas", text: 'Consultas', icon: MailQuestion }
-                // Restricción de elementos solo para superadmins
-                ...(userInfo?.SuperAdmin === true ? [
+                // Restricción de elementos para superadmins y callcenter users
+                ...(checkPermission('canAccessReclamaciones') ? [
                     { to: "/asistencia/reclamaciones", text: 'Reclamaciones', icon: AlertCircle },
                     { to: "/asistencia/contabilidad", text: 'Contabilidad', icon: UserPen },
                     { to: "/asistencia/consultas", text: 'Consultas', icon: MailQuestion }

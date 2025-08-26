@@ -5,7 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { CircleUserRound, FileText, HousePlus, LogOut, ReceiptEuro, ShieldCheck, User2, UserRoundPlus } from "lucide-react";
+import { CircleUserRound, FileText, HousePlus, LogOut, ReceiptEuro, ShieldCheck, User2, UserRoundPlus, UserPen } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Separator } from "@/components/ui/separator"
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { SettingsGearIcon } from "../Icons/settings-gear";
 import { useTranslation } from "react-i18next";
 import { useUserInfoStore } from "@/zustand/userInfoStore";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 export default function NavProfileUser({ user, role, handleLogout }) {
 
@@ -22,7 +23,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
 
     const userInfo = useUserInfoStore((state) => state.userInfo);
     // console.log('userInfo', userInfo);
-    const isSuperAdmin = userInfo?.SuperAdmin && userInfo?.Administrator;
+    const { checkPermission, isSuper, isCallcenter } = useUserPermissions();
     // console.log('isSuperAdmin', isSuperAdmin);
 
     return (
@@ -30,7 +31,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
             <div className="flex flex-col items-center justify-center">
                 {user && <span className="text-slate-800 dark:text-slate-300 font-bold">{user}</span>}
                 {
-                    isSuperAdmin ?
+                    isSuper ?
                         <span className="text-slate-500 dark:text-slate-400 text-xs">{t('SuperAdmin')}</span> :
                         role ?
                             <span className="text-slate-500 dark:text-slate-400 text-xs">{t('Administrator')}</span> :
@@ -74,7 +75,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
                         </div>
 
                         <div className="flex flex-col gap-3">
-                            {role && (
+                            {checkPermission('canManageBilling') && (
                                 <Link
                                     to="/facturacion"
                                     className={cn("flex items-center justify-between hover:bg-slate-200 rounded-md transition py-2 px-3 hover:text-slate-800 blindcolor:hover:text-white blindcolor:hover:bg-black",
@@ -85,7 +86,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
                                     <ReceiptEuro size={18} />
                                 </Link>
                             )}
-                            {role && (
+                            {checkPermission('canManageFiscalData') && (
                                 <Link
                                     to="/datos-fiscales"
                                     className={cn("flex items-center justify-between hover:bg-slate-200 rounded-md transition py-2 px-3 hover:text-slate-800 blindcolor:hover:text-white blindcolor:hover:bg-black",
@@ -97,7 +98,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
                                 </Link>
                             )}
 
-                            {role && (
+                            {checkPermission('canCreateUsers') && (
                                 <Link
                                     to="/nuevo-usuario"
                                     className={cn("flex items-center justify-between hover:bg-slate-200 rounded-md transition py-2 px-3 hover:text-slate-800 blindcolor:hover:text-white blindcolor:hover:bg-black",
@@ -108,7 +109,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
                                     <UserRoundPlus className="w-4 h-4" />
                                 </Link>
                             )}
-                            {role && (
+                            {checkPermission('canCreateBusinesses') && (
                                 <Button
                                     disabled
                                     variant="ghost"
@@ -137,7 +138,7 @@ export default function NavProfileUser({ user, role, handleLogout }) {
 
                         <Separator />
                         <div className="flex flex-col gap-2">
-                            {isSuperAdmin && (
+                            {isSuper && (
                                 <Link
                                     to="/superadmin"
                                     className={cn("flex items-center justify-between hover:bg-slate-200 rounded-md transition py-2 px-3 hover:text-slate-800 blindcolor:hover:text-white blindcolor:hover:bg-black",
@@ -146,6 +147,17 @@ export default function NavProfileUser({ user, role, handleLogout }) {
                                 >
                                     {t('SuperAdmin')}
                                     <ShieldCheck className="w-4 h-4" />
+                                </Link>
+                            )}
+                            {isCallcenter && (
+                                <Link
+                                    to="/callcenter"
+                                    className={cn("flex items-center justify-between hover:bg-slate-200 rounded-md transition py-2 px-3 hover:text-slate-800 blindcolor:hover:text-white blindcolor:hover:bg-black",
+                                        location.pathname === '/callcenter' ? 'bg-slate-200 text-slate-800' : ''
+                                    )}
+                                >
+                                    {t('CallcenterPanel')}
+                                    <UserPen className="w-4 h-4" />
                                 </Link>
                             )}
                             {/* {role && (

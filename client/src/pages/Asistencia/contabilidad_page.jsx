@@ -12,6 +12,7 @@ import { useTourSteps } from '@/hooks/useTourSteps';
 import { useTour } from '@reactour/tour';
 import { FormPersistenceIndicator } from '@/components/FormPersistanceIndicator';
 import { useUserInfoStore } from '@/zustand/userInfoStore';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 // import { FormPersistenceIndicator } from '@/components/FormPersistenceIndicator';
 
 
@@ -28,7 +29,7 @@ export default function ContabilidadPage() {
 
     const { userInfo } = useUserInfoStore()
 
-    const isSuperAdmin = userInfo?.SuperAdmin || false;
+    const { checkPermission } = useUserPermissions();
 
     const standardModules = [
         {
@@ -71,7 +72,7 @@ export default function ContabilidadPage() {
         },
     ];
 
-    const modules = isSuperAdmin ? [...standardModules, ...superAdminModules] : standardModules;
+    const modules = checkPermission('canAccessReclamaciones') ? [...standardModules, ...superAdminModules] : standardModules;
 
     const steps = useTourSteps();
     const { isOpen, currentStep, setIsOpen, setCurrentStep, setSteps } = useTour()

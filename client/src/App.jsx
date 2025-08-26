@@ -36,6 +36,8 @@ import { ExternalChatWidget } from "./components/chat/ExternalChatWidget";
 import ReclamacionesPage from "./pages/Asistencia/reclamaciones_page";
 import ContabilidadPage from "./pages/Asistencia/contabilidad_page";
 import ConsultationsPage from "./pages/Asistencia/consultations_page";
+import CallcenterRoute from "./components/CallcenterRoute";
+import CallcenterPage from "./pages/Callcenter/CallcenterPage";
 // import Footer from "./components/footer/Footer";
 
 function App() {
@@ -147,29 +149,25 @@ function App() {
                     <Route
                         path="/asistencia/reclamaciones"
                         element={
-                            <SuperAdminRoute>
-                                {/* <SuperAdminPage /> */}
+                            <CallcenterRoute>
                                 <ReclamacionesPage />
-                            </SuperAdminRoute>
+                            </CallcenterRoute>
                         }
                     />
                     <Route
                         path="/asistencia/contabilidad"
                         element={
-                            <SuperAdminRoute>
-                                {/* <SuperAdminPage /> */}
+                            <CallcenterRoute>
                                 <ContabilidadPage />
-                            </SuperAdminRoute>
+                            </CallcenterRoute>
                         }
                     />
                     <Route
                         path="/asistencia/consultas"
                         element={
-                            <SuperAdminRoute>
-                                {/* <SuperAdminPage /> */}
-                                {/* <ContabilidadPage /> */}
+                            <CallcenterRoute>
                                 <ConsultationsPage />
-                            </SuperAdminRoute>
+                            </CallcenterRoute>
                         }
                     />
 
@@ -193,6 +191,14 @@ function App() {
                             <SuperAdminRoute>
                                 <SuperAdminPage />
                             </SuperAdminRoute>
+                        }
+                    />
+                    <Route
+                        path="/callcenter"
+                        element={
+                            <CallcenterRoute>
+                                <CallcenterPage />
+                            </CallcenterRoute>
                         }
                     />
                     <Route path="/ajustes" element={<AjustesPage />} />

@@ -1,5 +1,3 @@
-
-
 import sql from 'mssql';
 import { handleError } from '../common/tools.js';
 import jwt from 'jsonwebtoken';
@@ -12,16 +10,16 @@ const AuthController = {};
 
 const DEFAULT_VALUES = {
     ADMINISTRATOR: 0,
+    CALLCENTER_USER: 0,
     ENABLED_ACCOUNT: 1,
     HOT_QUOTITATION: 0,
     SERVES_LEADS: 0,
     WaveExtension: 0
 };
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    // secure: true,
     secure: false,
     tls: {
         rejectUnauthorized: false
@@ -32,10 +30,259 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Función para crear usuarios de callcenter desde empresa externa
+AuthController.createCallcenterUser = async (req, res) => {
+    const {
+        name,
+        surname,
+        email,
+        cell,
+        password,
+        externalCompanyId, // ID de la empresa externa que crea el usuario
+        externalCompanyName // Nombre de la empresa externa
+    } = req.body;
+
+    const verificationToken = randomBytes(32).toString('hex');
+    const verificationTokenExpiry = new Date(Date.now() + 86400000); // 24 horas
+
+    try {
+        // Verificar que el email no exista
+        let checkQuery = `
+            SELECT ExternalLoginID
+            FROM Ex_Login
+            WHERE Email = @Email`;
+
+        let checkRequest = new sql.Request();
+        checkRequest.input('Email', sql.NVarChar(100), email);
+        let checkResult = await checkRequest.query(checkQuery);
+
+        if (checkResult.recordset.length > 0) {
+            return res.status(400).json({
+                message: "Ya existe un usuario con este correo electrónico"
+            });
+        }
+
+        // Crear una dirección de facturación especial para callcenter
+        const createAddressQuery = `
+            INSERT INTO Ex_InvoicingAddress (
+                Name,
+                Email,
+                TaxName,
+                Business,
+                SuperAdmin,
+                ExternalCompanyId,
+                ExternalCompanyName,
+                IsCallcenterAddress
+            )
+            VALUES (
+                @Name,
+                @Email,
+                @TaxName,
+                0,
+                0,
+                @ExternalCompanyId,
+                @ExternalCompanyName,
+                1
+            );
+            
+            SELECT SCOPE_IDENTITY() as Ex_InvoicingAddressID;`;
+
+        let addressRequest = new sql.Request();
+        addressRequest.input('Name', sql.NVarChar(100), `${name} ${surname}`.toUpperCase());
+        addressRequest.input('Email', sql.NVarChar(100), email.toUpperCase());
+        addressRequest.input('TaxName', sql.NVarChar(100), externalCompanyName.toUpperCase());
+        addressRequest.input('ExternalCompanyId', sql.Int, externalCompanyId);
+        addressRequest.input('ExternalCompanyName', sql.NVarChar(100), externalCompanyName.toUpperCase());
+
+        const addressResult = await addressRequest.query(createAddressQuery);
+        const Ex_InvoicingAddressID = addressResult.recordset[0].Ex_InvoicingAddressID;
+
+        // Crear el usuario de callcenter
+        const insertQuery = `
+            INSERT INTO Ex_Login (
+                Name,
+                Surname,
+                Cell,
+                Email,
+                Ex_InvoicingAddressID,
+                Password,
+                Administrator,
+                CallcenterUser,
+                Enabled,
+                VerificationToken,
+                VerificationTokenExpiry,
+                ExternalCompanyId,
+                ExternalCompanyName
+            )
+            VALUES (
+                @Name,
+                @Surname,
+                @Cell,
+                @Email,
+                @Ex_InvoicingAddressID,
+                PWDENCRYPT(@Password),
+                0,
+                1,
+                0,
+                @VerificationToken,
+                @VerificationTokenExpiry,
+                @ExternalCompanyId,
+                @ExternalCompanyName
+            );
+            
+            SELECT SCOPE_IDENTITY() as ExternalLoginID;`;
+
+        let insertRequest = new sql.Request();
+        insertRequest.input('Name', sql.NVarChar(100), name.toUpperCase());
+        insertRequest.input('Surname', sql.NVarChar(100), surname.toUpperCase());
+        insertRequest.input('Cell', sql.NVarChar(50), cell);
+        insertRequest.input('Email', sql.NVarChar(100), email.toUpperCase());
+        insertRequest.input('Ex_InvoicingAddressID', sql.Int, Ex_InvoicingAddressID);
+        insertRequest.input('Password', sql.VarChar(128), password);
+        insertRequest.input('VerificationToken', sql.NVarChar(100), verificationToken);
+        insertRequest.input('VerificationTokenExpiry', sql.DateTime, verificationTokenExpiry);
+        insertRequest.input('ExternalCompanyId', sql.Int, externalCompanyId);
+        insertRequest.input('ExternalCompanyName', sql.NVarChar(100), externalCompanyName);
+
+        const insertResult = await insertRequest.query(insertQuery);
+        const externalLoginID = insertResult.recordset[0].ExternalLoginID;
+
+        // Obtener la información del usuario creado
+        let getUserQuery = `
+            SELECT 
+                ExternalLoginID,
+                Name,
+                Surname,
+                Cell,
+                Email,
+                Ex_InvoicingAddressID,
+                Administrator,
+                CallcenterUser,
+                Enabled,
+                ExternalCompanyName
+            FROM Ex_Login
+            WHERE ExternalLoginID = @ExternalLoginID`;
+
+        let getUserRequest = new sql.Request();
+        getUserRequest.input('ExternalLoginID', sql.Int, externalLoginID);
+        let getUserResult = await getUserRequest.query(getUserQuery);
+
+        if (getUserResult.recordset.length > 0) {
+            const userInfo = getUserResult.recordset[0];
+
+            // Enviar email de verificación
+            await sendCallcenterVerificationEmail(userInfo, verificationToken, externalCompanyName);
+
+            res.status(201).json({
+                message: "Usuario de callcenter creado exitosamente. Se ha enviado un correo de verificación.",
+                user: userInfo
+            });
+        } else {
+            throw new Error("Error al crear el usuario de callcenter");
+        }
+
+    } catch (err) {
+        console.error('Error en registro de callcenter:', err);
+        res.status(500).json({
+            error: 'Error al crear el usuario de callcenter',
+            details: err.message
+        });
+    }
+};
+
+const sendCallcenterVerificationEmail = async (userInfo, verificationToken, companyName) => {
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM,
+        to: userInfo.Email,
+        subject: `Cuenta de Callcenter creada - ${companyName}`,
+        html: `
+            <h1>¡Bienvenido al sistema Rapitecnic!</h1>
+            <p>Hola ${userInfo.Name},</p>
+            <p>Se ha creado una cuenta de callcenter para ti en nombre de <strong>${companyName}</strong>.</p>
+            <p>Para activar tu cuenta y comenzar a usar el sistema, por favor verifica tu cuenta haciendo clic en el siguiente enlace:</p>
+            <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #00A7E1; color: white; text-decoration: none; border-radius: 5px;">Verificar cuenta</a>
+            <p>O copia y pega este enlace en tu navegador:</p>
+            <p>${verificationUrl}</p>
+            
+            <h3>Permisos de tu cuenta:</h3>
+            <ul>
+                <li>✅ Acceso a reclamaciones</li>
+                <li>✅ Gestión de contabilidad</li>
+                <li>✅ Manejo de consultas</li>
+                <li>✅ Visualización de todos los clientes</li>
+                <li>✅ Modificación de datos de clientes</li>
+            </ul>
+            
+            <p>Este enlace es válido por 24 horas.</p>
+            <br>
+            <p>Si no esperabas esta cuenta, puedes ignorar este correo.</p>
+            <p>Saludos,</p>
+            <p>El equipo de Rapitecnic</p>
+            
+            <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.4; color: #333;">
+                <tr>
+                    <td style="padding-right: 15px; vertical-align: top;">
+                        <div style="display: flex; flex-direction: column;">
+                            <div style="margin-bottom: 4px;">
+                                <span style="color: #000; font-size: 28px; font-weight: bold; letter-spacing: 1px; font-family: Arial, sans-serif;">
+                                    RAPI<span style="color: #8B008B;">TECNIC</span>
+                                </span>
+                            </div>
+                            <div>
+                                <span style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: block;">
+                                    Servicio Técnico Integral
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="vertical-align: top; border-left: 2px solid #ddd; padding-left: 15px;">
+                        <table cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td style="font-weight: bold; font-size: 16px; color: #333; padding-bottom: 5px;">
+                                    Cuenta Callcenter
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 3px;">
+                                    <strong>Empresa:</strong> ${companyName}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 3px;">
+                                    <strong>Correo:</strong> 
+                                    <a href="mailto:itsupport@rapitecnic.com" style="color: #8B008B; text-decoration: none;">
+                                        itsupport@rapitecnic.com
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 10px;">
+                                    <strong>Web:</strong> 
+                                    <a href="https://www.rapitecnic.com" style="color: #8B008B; text-decoration: none;">
+                                        www.rapitecnic.com
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email de verificación de callcenter enviado a:', userInfo.Email);
+    } catch (error) {
+        console.error('Error al enviar email de verificación de callcenter:', error);
+        throw error;
+    }
+};
 
 const sendVerificationEmail = async (userInfo, verificationToken) => {
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-    // console.log('verificationUrl', verificationUrl);
 
     const mailOptions = {
         from: process.env.SMTP_FROM,
@@ -182,7 +429,6 @@ AuthController.verifyEmail = async (req, res) => {
         });
     }
 };
-
 
 AuthController.requestPasswordReset = async (req, res) => {
     const { email } = req.body;
@@ -392,11 +638,13 @@ AuthController.login = async (req, res) => {
                 Ex_Login.Ex_InvoicingAddressID,
                 Ex_Login.Password,
                 Ex_Login.Administrator,
+                Ex_Login.CallcenterUser,
                 Ex_Login.City,
                 Ex_Login.ZipCode,
                 Ex_Login.Province,
                 Ex_Login.Enabled,
                 Ex_Login.ProfileImageUrl,
+                Ex_Login.ExternalCompanyName,
                 Ex_InvoicingAddress.TaxName,
                 Ex_InvoicingAddress.TaxIDNumber,
                 Ex_InvoicingAddress.DocumentTypeID,
@@ -563,6 +811,7 @@ AuthController.register = async (req, res) => {
                 Ex_InvoicingAddressID,
                 Password,
                 Administrator,
+                CallcenterUser,
                 City,
                 ZipCode,
                 Province,
@@ -581,6 +830,7 @@ AuthController.register = async (req, res) => {
                 @Ex_InvoicingAddressID,
                 PWDENCRYPT(@Password),
                 1,
+                0,
                 @City,
                 @ZipCode,
                 @Province,
@@ -621,6 +871,7 @@ AuthController.register = async (req, res) => {
                 Email,
                 Ex_InvoicingAddressID,
                 Administrator,
+                CallcenterUser,
                 City,
                 ZipCode,
                 Province,
@@ -705,6 +956,7 @@ AuthController.registerUser = async (req, res) => {
                 Ex_InvoicingAddressID,
                 Password,
                 Administrator,
+                CallcenterUser,
                 Enabled,
                 VerificationToken,
                 VerificationTokenExpiry
@@ -716,6 +968,7 @@ AuthController.registerUser = async (req, res) => {
                 @Email,
                 @Ex_InvoicingAddressID,
                 PWDENCRYPT(@Password),
+                0,
                 0,
                 0,
                 @VerificationToken,
@@ -742,6 +995,7 @@ AuthController.registerUser = async (req, res) => {
                 ExternalLoginID,
                 Name,
                 Surname,
+                CallcenterUser,
                 Cell,
                 Email,
                 Ex_InvoicingAddressID,

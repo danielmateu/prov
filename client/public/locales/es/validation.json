@@ -17,6 +17,8 @@
         "PurchaseDateRequired": "La fecha de compra es requerida",
         "InvoiceRequired": "La factura es requerida",
         "FileSizeLimit": "El archivo no puede superar los 5MB",
-        "FileTypeAccepted": "Solo se aceptan archivos JPG, PNG o PDF"
+        "FileTypeAccepted": "Solo se aceptan archivos JPG, PNG o PDF",
+        "CallcenterPanel": "Panel Callcenter",
+        "CallcenterUser": "Usuario Callcenter"
     }
 }

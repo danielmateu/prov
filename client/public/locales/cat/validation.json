@@ -17,6 +17,8 @@
         "PurchaseDateRequired": "La data de compra és obligatòria",
         "InvoiceRequired": "La factura és obligatòria",
         "FileSizeLimit": "L'arxiu no pot superar els 5MB",
-        "FileTypeAccepted": "Només s'accepten arxius JPG, PNG o PDF"
+        "FileTypeAccepted": "Només s'accepten arxius JPG, PNG o PDF",
+        "CallcenterPanel": "Panell Callcenter",
+        "CallcenterUser": "Usuari Callcenter"
     }
 }

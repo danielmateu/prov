@@ -22,6 +22,7 @@ import { useTourSteps } from '@/hooks/useTourSteps';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useUserInfoStore } from '@/zustand/userInfoStore';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 
 const ModuleCard = ({ title, icon, path, description, className }) => (
@@ -54,11 +55,11 @@ export default function AsistenciaPage() {
     const { t } = useTranslation();
     const { setSteps, isOpen, setIsOpen, setCurrentStep } = useTour();
     const steps = useTourSteps();
-    const { userInfo } = useUserInfoStore()
+    const { userInfo } = useUserInfoStore();
+    const { checkPermission } = useUserPermissions();
 
     console.log('User Info:', userInfo);
 
-    const isSuperAdmin = userInfo?.SuperAdmin || false;
 
     useEffect(() => {
         // document.title = 'Rapitecnic | ' + t('AssistanceRequest');
@@ -118,7 +119,7 @@ export default function AsistenciaPage() {
     ];
 
     // Combinar módulos según el rol del usuario
-    const modules = isSuperAdmin
+    const modules = checkPermission('canAccessReclamaciones')
         ? [...baseModules, ...adminModules]
         : baseModules;
 
@@ -175,7 +176,7 @@ export default function AsistenciaPage() {
                                     ))}
                                 </SelectGroup>
 
-                                {isSuperAdmin && (
+                                {checkPermission('canAccessReclamaciones') && (
                                     <SelectGroup>
                                         {/* <SelectLabel>Módulos Administrativos</SelectLabel> */}
                                         {adminModules.map((module, index) => (
@@ -201,7 +202,7 @@ export default function AsistenciaPage() {
                     </div>
 
                     {/* Módulos de administración en 3 columnas cuando están disponibles */}
-                    {isSuperAdmin && (
+                    {checkPermission('canAccessReclamaciones') && (
                         <div className="mt-8">
                             {/* <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
                                 Módulos Administrativos

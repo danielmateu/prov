@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/login", authController.login);
 router.post("/register", authController.register);
 router.post("/registerUser", authController.registerUser);
+router.post("/createCallcenterUser", authController.createCallcenterUser);
 
 router.get("/getDocumentTypes", authController.getDocumentTypes);
 

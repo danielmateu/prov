@@ -13,6 +13,7 @@ import { set } from 'date-fns';
 import { usePendingPaymentsStore } from '@/zustand/pendingPaymentsStore';
 import { FormPersistenceIndicator } from '@/components/FormPersistanceIndicator';
 import { useUserInfoStore } from '@/zustand/userInfoStore';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 // import { FormPersistenceIndicator } from '@/components/FormPersistenceIndicator';
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -30,7 +31,7 @@ export default function SolicitudReparacionPage() {
     // console.log('location', location.pathname);
     const { userInfo } = useUserInfoStore()
 
-    const isSuperAdmin = userInfo?.SuperAdmin || false;
+    const { checkPermission } = useUserPermissions();
 
     const standardModules = [
         {
@@ -73,7 +74,7 @@ export default function SolicitudReparacionPage() {
         },
     ];
 
-    const modules = isSuperAdmin ? [...standardModules, ...superAdminModules] : standardModules;
+    const modules = checkPermission('canAccessReclamaciones') ? [...standardModules, ...superAdminModules] : standardModules;
 
     // const modules = [
     //     {
